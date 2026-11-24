@@ -5,26 +5,32 @@ import os
 import sys
 from pathlib import Path
 
+SOURCE = Path(__file__).resolve().parent / "excuse.txt"
+ENTRY_NAME = "entry.txt"
+
+
+def fail(message: str) -> int:
+    """Print an error to stderr and return the failure exit code."""
+    print(f"error: {message}", file=sys.stderr)
+    return 1
+
 
 def main() -> int:
-    src = Path(__file__).resolve().parent / "excuse.txt"
     out_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "./output"))
+    dest = out_dir / ENTRY_NAME
 
-    if not src.is_file():
-        print(f"error: source not found: {src}", file=sys.stderr)
-        return 1
+    if not SOURCE.is_file():
+        return fail(f"source not found: {SOURCE}")
 
-    text = src.read_text(encoding="utf-8").strip()
+    text = SOURCE.read_text(encoding="utf-8").strip()
     if not text:
-        print(f"error: source is empty: {src}", file=sys.stderr)
-        return 1
+        return fail(f"source is empty: {SOURCE}")
 
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
-        (out_dir / "entry.txt").write_text(text + "\n", encoding="utf-8")
+        dest.write_text(text + "\n", encoding="utf-8")
     except OSError as exc:
-        print(f"error: cannot write entry: {exc}", file=sys.stderr)
-        return 1
+        return fail(f"cannot write {dest}: {exc}")
 
     return 0
 

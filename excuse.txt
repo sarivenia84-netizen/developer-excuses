@@ -1,0 +1,1 @@
+It works on my machine — that's the bug. My machine is single-threaded and my tests are too. Prod is just the first place I ever ran this with a second user, and it did exactly what I told it to.
